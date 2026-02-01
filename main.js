@@ -34,28 +34,62 @@ async function fetchPosts() {
   const url = "https://jsonplaceholder.typicode.com/posts?_limit=10";
 
   try {
-    console.log("Loading posts...")
-    const startTime = Date.now()
+    console.log("Loading posts...");
+    const startTime = Date.now();
     const response = await fetch(url);
     if (!response.ok) {
       throw new Error(`Response status: ${response.status}`);
     }
-    const endTime = Date.now()
+    const endTime = Date.now();
 
     const result = await response.json();
-    console.log(result);
-
-    console.log(`API call took ${endTime - startTime} milliseconds`)
-    apiCallTimes.push(endTime - startTime)
-    return result
+    posts.push(result);
+    console.log(`API call took ${endTime - startTime} milliseconds`);
+    apiCallTimes.push(endTime - startTime);
+    return result;
   } catch (err) {
     console.error(err);
   }
 }
 
 // Option 2: Display post statistics
-function displayPostStatistics() {
-  // TODO: Implement this function
+function displayPostStatistics(data) {
+  let min_title = data[0].title.length;
+  let max_title = data[0].title.length;
+  for (let i = 1; i < data.length; i++) {
+    const element = data[i].title.length;
+    if (element < min_title) {
+      min_title = element;
+    }
+    if (element > max_title) {
+      max_title = element;
+    }
+  }
+  const arr_length = data.length;
+  let sum = 0;
+  data.forEach((element) => {
+    sum += element.body.length;
+  });
+  let sum_words = 0;
+  data.forEach((element) => {
+    const element2 = element.body.split(" ").length;
+    sum_words += element2;
+  });
+
+  let max_chr_in_post = data[0].body.length;
+  for (let i = 1; i < data.length; i++) {
+    const element3 = data[i].body.length;
+    if (element3 > max_chr_in_post) {
+      max_chr_in_post = element3;
+    }
+  }
+
+  console.log(`sum of posts: ${data.length}`);
+  console.log(`min title: ${min_title}`);
+  console.log(`max title: ${max_title}`);
+  console.log(`Post with max characters in is body: ${max_chr_in_post}`);
+  console.log(`sum of all the words: ${sum_words}`);
+  console.log(`EVG of body letters length: ${sum / arr_length}`);
 }
 
 // Option 3: Display API performance statistics
@@ -76,7 +110,8 @@ async function main() {
         await fetchPosts();
         break;
       case "2":
-        displayPostStatistics();
+        const data = await fetchPosts();
+        displayPostStatistics(data);
         break;
       case "3":
         displayApiPerformance();
