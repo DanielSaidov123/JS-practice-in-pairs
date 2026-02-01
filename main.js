@@ -31,26 +31,26 @@ function promptUser(question) {
 
 // Option 1: Fetch posts
 async function fetchPosts() {
-  const apiCallTimes = [];
-  const startTime = new Date()
-  fetch("https://jsonplaceholder.typicode.com/posts?_limit=10")
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error("Network response was not ok " + response.statusText);
-      }
-      const endTime = new Date() 
-      const timeTaken = endTime - startTime;
-      apiCallTimes.push(timeTaken)
-      console.log(apiCallTimes);
-      
-      return response.json();
-    })
-    .then((data) => {
-      console.log(data);
-    })
-    .catch((error) => {
-      console.error("There was a problem with the fetch operation:", error);
-    });
+  const url = "https://jsonplaceholder.typicode.com/posts?_limit=10";
+
+  try {
+    console.log("Loading posts...")
+    const startTime = Date.now()
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`Response status: ${response.status}`);
+    }
+    const endTime = Date.now()
+
+    const result = await response.json();
+    console.log(result);
+
+    console.log(`API call took ${endTime - startTime} milliseconds`)
+    apiCallTimes.push(endTime - startTime)
+    return result
+  } catch (err) {
+    console.error(err);
+  }
 }
 
 // Option 2: Display post statistics
@@ -94,4 +94,3 @@ async function main() {
 
 // Run the application
 main();
- 
